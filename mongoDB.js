@@ -11,19 +11,27 @@ const User = mongoose.model('User', userSchema)
 
 function addUser(userName) {
     let user = new User({ username: userName })
-    
+
     user.save((err) => {
         if (err) {
             console.log(err)
         }
     })
-    
+
     return {
         username: user.username,
         _id: user.id
     }
 }
 
+async function getUsers() {
+    // get all users in the collection
+    let users = await User.find()
+    
+    return users
+}
+
 module.exports = {
-    addUser: addUser
+    addUser: addUser,
+    getUsers: getUsers
 }
