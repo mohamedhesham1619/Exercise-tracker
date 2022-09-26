@@ -27,11 +27,18 @@ function addUser(userName) {
 async function getUsers() {
     // get all users in the collection
     let users = await User.find()
-    
+
     return users
+}
+
+async function getUsernameById(userId) {
+
+    let user = await User.findById(userId)
+    return user.username
 }
 
 module.exports = {
     addUser: addUser,
-    getUsers: getUsers
+    getUsers: getUsers,
+    getUsernameById, getUsernameById
 }

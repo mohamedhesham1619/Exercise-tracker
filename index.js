@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { addUser, getUsers } = require('./mongoDB')
+const { addUser, getUsers, getUsernameById } = require('./data/users')
+const { addExcercise } = require('./data/exercises')
 require('dotenv').config()
 
 app.use(cors())
@@ -19,7 +20,11 @@ app.post('/api/users', (req, res) => {
 app.get('/api/users', async(req, res)=>{
   let users = await getUsers()
   res.json(users)
+})
+
+app.post('/api/users/:_id/exercises',async (req, res)=>{
   
+  res.json(await addExcercise(req.body))
 })
 
 
