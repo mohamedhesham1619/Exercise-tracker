@@ -85,6 +85,12 @@ async function getLogs(userId, options){
 
     // make deep copy of user logs to avoid edittig the original one
     let userLogs = JSON.parse(JSON.stringify(await logsModel.findOne({'_id': userId})))
+
+    if(! userLogs){
+        return {
+            error: "logs not found"
+        }
+    }
     
     // if no options provided return the user logs without any filters
     if(!optionFromDate && !optionToDate && !optionLimitNumber){
