@@ -31,7 +31,7 @@ app.get('/api/users/:_id/logs', async (req, res)=>{
   let options =  req.query
   let userId = req.params._id
   
-  res.json(await getLogs(userId))
+  res.json(await getLogs(userId, options))
 })
 
 

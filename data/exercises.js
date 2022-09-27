@@ -64,9 +64,55 @@ async function addExcercise(details) {
     return response
 }
 
-// return all logs for the given user id
-async function getLogs(userId){
-    let userLogs = await logsModel.find({'_id': userId})
+// return logs for the given user id
+// options can be ('from', 'to') for date and 'limit' for limiting the logs number
+async function getLogs(userId, options){
+    let optionFromDate = options['from']
+    let optionToDate = options['to']
+    let optionLimitNumber = options['limit']
+
+    // make deep copy of user logs to avoid edittig the original one
+    let userLogs = JSON.parse(JSON.stringify(await logsModel.findOne({'_id': userId})))
+    
+    // if no options provided return the user logs without any filters
+    if(!optionFromDate && !optionToDate && !optionLimitNumber){
+        return userLogs
+    }
+    
+    let logsList = userLogs['log']
+    let filteredLogsList = []
+
+    // if options from and to provided
+    if(optionFromDate && optionToDate){
+        filteredLogsList = logsList.filter((log)=>{
+            let logDate = new Date(log['date'])
+            return (logDate >= optionFromDate && logDate <= optionToDate)
+        })
+    }
+    // if only option from provided
+    else if(optionFromDate){
+        filteredLogsList = logsList.filter((log)=>{
+            let logDate = new Date(log['date'])
+            return (logDate >= optionFromDate)
+        })
+    }
+    // if only option to provided
+    else if(optionToDate){
+        filteredLogsList = logsList.filter((log)=>{
+            let logDate = new Date(log['date'])
+            return (logDate <= optionToDate)
+        })
+    }
+    // if only option limit provided, limit the full list
+    if(optionLimitNumber && !optionFromDate && !optionToDate){
+        filteredLogsList = logsList.slice(0, Number(optionLimitNumber))
+    }
+    // if option limit provided with option from or to or both, limit the filtered list
+    else if(optionLimitNumber && (optionFromDate || optionToDate)){
+        filteredLogsList = filteredLogsList.slice(0, Number(optionLimitNumber))
+    }
+    
+    userLogs.log = filteredLogsList
     return userLogs
 }
 
