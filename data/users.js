@@ -37,8 +37,10 @@ async function getUsernameById(userId) {
     return user.username
 }
 
+
 module.exports = {
     addUser: addUser,
     getUsers: getUsers,
-    getUsernameById, getUsernameById
+    getUsernameById: getUsernameById,
+    
 }
