@@ -25,7 +25,18 @@ const logsModel = mongoose.model('logs', logsSchema)
 // details is the request body for '/api/users/:_id/exercises' endpoint
 async function addExcercise(details) {
     console.log('id: ', details[':_id'])
+    if(details[':_id']){
+        return{
+            error: "id not found"
+        }
+    }
     let userName = await getUsernameById(details[':_id'])
+
+    if(! userName){
+        return {
+            error: "user not found"
+        }
+    }
 
     // if the date is empty use the current date
     let date = (details['date'] == '') ? new Date(Date.now()).toDateString() : new Date(details['date']).toDateString()
