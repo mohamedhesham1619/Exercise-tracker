@@ -25,7 +25,7 @@ const logsModel = mongoose.model('logs', logsSchema)
 // details is the request body for '/api/users/:_id/exercises' endpoint
 async function addExcercise(details) {
     console.log('id: ', details[':_id'])
-    if(details[':_id']){
+    if(! details[':_id']){
         return{
             error: "id not found"
         }
