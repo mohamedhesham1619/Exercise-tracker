@@ -9,6 +9,7 @@ app.use(cors())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: false }))
 
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
@@ -23,8 +24,8 @@ app.get('/api/users', async(req, res)=>{
 })
 
 app.post('/api/users/:_id/exercises',async (req, res)=>{
-  
-  res.json(await addExcercise(req.body))
+  let response = await addExcercise(req.body)
+  res.json(response)
 })
 
 app.get('/api/users/:_id/logs', async (req, res)=>{
