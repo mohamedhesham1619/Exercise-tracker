@@ -34,7 +34,7 @@ async function getUsers() {
 async function getUsernameById(userId) {
 
     let user = await User.findById(userId)
-    return user['username']
+    return user.username
 }
 
 
