@@ -24,6 +24,7 @@ const logsModel = mongoose.model('logs', logsSchema)
 // save the exercise in user logs for every user and return response object with user info and exercise details
 // details is the request body for '/api/users/:_id/exercises' endpoint
 async function addExcercise(details) {
+    console.log('id: ', details[':_id'])
     let userName = await getUsernameById(details[':_id'])
 
     // if the date is empty use the current date
@@ -36,7 +37,7 @@ async function addExcercise(details) {
     })
 
     let userLogs = await logsModel.findOne({'_id': details[':_id']})
-    console.log('found log: ', userLogs, typeof userLogs)
+    
     if(!userLogs){
         let newUserLogs = new logsModel({
             '_id': details[':_id'],
@@ -58,7 +59,7 @@ async function addExcercise(details) {
         '_id': details[':_id'],
         username: userName,
         date: date,
-        duration: details['duration'],
+        duration: Number(details['duration']),
         description: details['description'],
     }
     return response
