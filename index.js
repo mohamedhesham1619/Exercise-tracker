@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { addUser, getUsers, getUsernameById, getCollections } = require('./data/users')
+const { addUser, getUsers } = require('./data/users')
 const { addExcercise, getLogs } = require('./data/exercises')
 require('dotenv').config()
 
