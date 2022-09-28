@@ -14,8 +14,9 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-app.post('/api/users', (req, res) => {
-  res.json(addUser(req.body.username))
+app.post('/api/users',async (req, res) => {
+  let response = await addUser(req.body.username)
+  res.json(response)
 })
 
 app.get('/api/users', async(req, res)=>{
@@ -27,6 +28,7 @@ app.post('/api/users/:_id/exercises',async (req, res)=>{
   let userId = req.params['_id']
   let exerciseDetails = req.body
   let response = await addExcercise(userId, exerciseDetails)
+  
   res.json(response)
 })
 

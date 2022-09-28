@@ -22,7 +22,6 @@ const exerciseModel = mongoose.model('exercise', exerciseSchema)
 const logsModel = mongoose.model('logs', logsSchema)
 
 // save the exercise in user logs for every user and return response object with user info and exercise details
-// details is the request body for '/api/users/:_id/exercises' endpoint
 async function addExcercise(userId, exerciseDetails) {
     
     if(! userId){
@@ -38,8 +37,8 @@ async function addExcercise(userId, exerciseDetails) {
         }
     }
 
-    // if the date is empty use the current date
-    let date = (exerciseDetails['date'] == '') ? new Date(Date.now()).toDateString() : new Date(details['date']).toDateString()
+    // if the date in request body is empty use the current date
+    let date = (!exerciseDetails['date']) ? new Date(Date.now()).toDateString() : new Date(exerciseDetails['date']).toDateString()
 
     let exercise = new exerciseModel({
         date: date,
@@ -48,7 +47,8 @@ async function addExcercise(userId, exerciseDetails) {
     })
 
     let userLogs = await logsModel.findOne({'_id': userId})
-    
+
+    // if the user is new and doesn't have logs create a new logs document for him
     if(!userLogs){
         let newUserLogs = new logsModel({
             '_id': userId,
@@ -59,6 +59,7 @@ async function addExcercise(userId, exerciseDetails) {
         
         newUserLogs.save()
     }
+    // if the user already has logs add the exercise to it and increse the count by one
     else{
         userLogs.count++
         userLogs.log.push(exercise)
@@ -79,9 +80,9 @@ async function addExcercise(userId, exerciseDetails) {
 // return logs for the given user id
 // options can be ('from', 'to') for date and 'limit' for limiting the logs number
 async function getLogs(userId, options){
-    let optionFromDate = options['from']
-    let optionToDate = options['to']
-    let optionLimitNumber = options['limit']
+    let optionFrom = options['from']
+    let optionTo = options['to']
+    let optionLimit = options['limit']
 
     // make deep copy of user logs to avoid edittig the original one
     let userLogs = JSON.parse(JSON.stringify(await logsModel.findOne({'_id': userId})))
@@ -93,41 +94,45 @@ async function getLogs(userId, options){
     }
     
     // if no options provided return the user logs without any filters
-    if(!optionFromDate && !optionToDate && !optionLimitNumber){
+    if(!optionFrom && !optionTo && !optionLimit){
         return userLogs
     }
     
     let logsList = userLogs['log']
     let filteredLogsList = []
 
+    let optionFromValue = new Date(optionFrom)
+    let optionToValue = new Date(optionTo)
+    let optionLimitValue = Number(optionLimit)
+
     // if options from and to provided
-    if(optionFromDate && optionToDate){
+    if(optionFrom && optionTo){
         filteredLogsList = logsList.filter((log)=>{
             let logDate = new Date(log['date'])
-            return (logDate >= optionFromDate && logDate <= optionToDate)
+            return (logDate >= optionFromValue && logDate <= optionToValue)
         })
     }
     // if only option from provided
-    else if(optionFromDate){
+    else if(optionFrom){
         filteredLogsList = logsList.filter((log)=>{
             let logDate = new Date(log['date'])
-            return (logDate >= optionFromDate)
+            return (logDate >= optionFromValue)
         })
     }
     // if only option to provided
-    else if(optionToDate){
+    else if(optionTo){
         filteredLogsList = logsList.filter((log)=>{
             let logDate = new Date(log['date'])
-            return (logDate <= optionToDate)
+            return (logDate <= optionTo)
         })
     }
     // if only option limit provided, limit the full list
-    if(optionLimitNumber && !optionFromDate && !optionToDate){
-        filteredLogsList = logsList.slice(0, Number(optionLimitNumber))
+    if(optionLimit && !optionFrom && !optionTo){
+        filteredLogsList = logsList.slice(0, optionLimitValue)
     }
     // if option limit provided with option from or to or both, limit the filtered list
-    else if(optionLimitNumber && (optionFromDate || optionToDate)){
-        filteredLogsList = filteredLogsList.slice(0, Number(optionLimitNumber))
+    else if(optionLimit && (optionFrom || optionTo)){
+        filteredLogsList = filteredLogsList.slice(0, Number(optionLimitValue))
     }
     
     userLogs.log = filteredLogsList

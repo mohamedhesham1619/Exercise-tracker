@@ -9,10 +9,10 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema)
 
-function addUser(userName) {
+async function addUser(userName) {
     let user = new User({ username: userName })
 
-    user.save((err) => {
+    await user.save((err) => {
         if (err) {
             console.log(err)
         }
