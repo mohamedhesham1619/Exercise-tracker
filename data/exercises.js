@@ -23,14 +23,14 @@ const logsModel = mongoose.model('logs', logsSchema)
 
 // save the exercise in user logs for every user and return response object with user info and exercise details
 // details is the request body for '/api/users/:_id/exercises' endpoint
-async function addExcercise(details) {
-    console.log('id: ', details[':_id'])
-    if(! details[':_id']){
+async function addExcercise(userId, exerciseDetails) {
+    
+    if(! userId){
         return{
             error: "id not found"
         }
     }
-    let userName = await getUsernameById(details[':_id'])
+    let userName = await getUsernameById(userId)
 
     if(! userName){
         return {
@@ -39,19 +39,19 @@ async function addExcercise(details) {
     }
 
     // if the date is empty use the current date
-    let date = (details['date'] == '') ? new Date(Date.now()).toDateString() : new Date(details['date']).toDateString()
+    let date = (exerciseDetails['date'] == '') ? new Date(Date.now()).toDateString() : new Date(details['date']).toDateString()
 
     let exercise = new exerciseModel({
         date: date,
-        duration: details['duration'],
-        description: details['description'],
+        duration: exerciseDetails['duration'],
+        description: exerciseDetails['description'],
     })
 
-    let userLogs = await logsModel.findOne({'_id': details[':_id']})
+    let userLogs = await logsModel.findOne({'_id': userId})
     
     if(!userLogs){
         let newUserLogs = new logsModel({
-            '_id': details[':_id'],
+            '_id': userId,
             username: userName,
             count: 1,
             log: [exercise]
@@ -67,11 +67,11 @@ async function addExcercise(details) {
     
 
     let response = {
-        '_id': details[':_id'],
+        '_id': userId,
         username: userName,
         date: date,
-        duration: Number(details['duration']),
-        description: details['description'],
+        duration: Number(exerciseDetails['duration']),
+        description: exerciseDetails['description'],
     }
     return response
 }

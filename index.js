@@ -24,7 +24,9 @@ app.get('/api/users', async(req, res)=>{
 })
 
 app.post('/api/users/:_id/exercises',async (req, res)=>{
-  let response = await addExcercise(req.body)
+  let userId = req.params['_id']
+  let exerciseDetails = req.body
+  let response = await addExcercise(userId, exerciseDetails)
   res.json(response)
 })
 
